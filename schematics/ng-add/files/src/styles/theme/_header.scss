@@ -1,0 +1,50 @@
+// ==================================================
+// HEADER
+// ==================================================
+
+.matero-header {
+  display: block;
+  position: relative;
+  z-index: 9;
+
+  .matero-toolbar {
+    padding: 0;
+  }
+
+  // Layout control
+  .matero-header-fixed & {
+    position: sticky;
+    top: 0;
+  }
+}
+
+.matero-toolbar {
+  @include mat-elevation(2);
+
+  .badge {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    font-size: 12px;
+    border-radius: 10px;
+  }
+}
+
+// Colorful
+.matero-header-white {
+  .matero-toolbar,
+  .matero-topmenu {
+    background-color: white;
+  }
+}
+
+.matero-hamburger.mat-button {
+  height: 100%;
+  padding: 0;
+}
+
+@include bp-lt(tiny) {
+  .matero-hamburger.mat-button {
+    min-width: 15%;
+  }
+}

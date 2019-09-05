@@ -1,0 +1,65 @@
+// ==================================================
+// TOPNAV
+// ==================================================
+
+@mixin matero-topnav-theme($theme) {
+  $background: mat-color($theme, 'background');
+  $foreground: mat-color($theme, 'foreground');
+
+  .matero-topmenu {
+    display: block;
+    position: sticky;
+    z-index: 9;
+    background: mat-color($background, app-bar);
+    color: mat-color($foreground, text);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+
+    @include mat-elevation(2);
+
+    .menu-label,
+    .menu-badge {
+      margin-left: 8px;
+      font-size: 12px;
+    }
+
+    .menu-badge {
+      border-radius: 10px;
+    }
+
+    .menu-caret {
+      margin-right: -8px;
+    }
+  }
+
+  .matero-topmenu-inner {
+    padding: 8px;
+    white-space: nowrap;
+  }
+
+  // Layout control
+  .matero-navbar-top {
+    .matero-topmenu {
+      top: 0;
+    }
+
+    .matero-branding {
+      margin-left: 16px;
+    }
+  }
+
+  // Layout control
+  .matero-header-fixed {
+    .matero-topmenu {
+      top: $topmenu-sticky-position-desktop;
+    }
+  }
+
+  @include bp-lt(tiny) {
+    .matero-header-fixed {
+      .matero-topmenu {
+        top: $topmenu-sticky-position-mobile;
+      }
+    }
+  }
+}
