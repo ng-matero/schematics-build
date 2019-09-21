@@ -1,27 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Subject, Observable } from 'rxjs';
-
-export interface AppSettings {
-  showHeader?: boolean;
-  theme?: 'light' | 'dark';
-  headerPos?: 'fixed' | 'static' | 'above';
-  navPos?: 'side' | 'top';
-  sidenavCollapsed?: boolean;
-  sidenavOpened?: boolean;
-  showUserPanel?: boolean;
-  dir?: 'ltr' | 'rtl';
-}
-
-const defaults: AppSettings = {
-  showHeader: true,
-  theme: 'light',
-  headerPos: 'fixed',
-  navPos: 'side',
-  sidenavCollapsed: false,
-  sidenavOpened: true,
-  showUserPanel: true,
-  dir: 'ltr',
-};
+import { AppSettings, defaults } from '../settings';
 
 @Injectable({
   providedIn: 'root',
@@ -29,13 +8,13 @@ const defaults: AppSettings = {
 export class SettingsService {
   private notice$ = new Subject<any>();
 
-  options = defaults;
+  private options = defaults;
 
   get notice(): Observable<any> {
     return this.notice$.asObservable();
   }
 
-  setLayout(options?: AppSettings) {
+  setLayout(options?: AppSettings): AppSettings {
     this.options = Object.assign(defaults, options);
     return this.options;
   }
@@ -44,7 +23,7 @@ export class SettingsService {
     this.notice$.next({ type, value } as any);
   }
 
-  getOptions() {
+  getOptions(): AppSettings {
     return this.options;
   }
 }

@@ -21,6 +21,16 @@ function addLoaderToIndex(options) {
       width: 100%;
       height: 100%;
       background-color: #fff;
+      opacity: 1;
+      transition: opacity .5s ease-in-out;
+    }
+
+    .global-loader-fade-in {
+      opacity: 0;
+    }
+
+    .global-loader-hidden {
+      display: none;
     }
 
     .global-loader h1 {
@@ -52,9 +62,9 @@ function addLoaderToIndex(options) {
       }
     }
     `;
-        const loaderHtml = `<div class="global-loader"><h1>LOADING</h1></div>`;
+        const loaderHtml = `<div id="globalLoader" class="global-loader"><h1>LOADING</h1></div>`;
         utils_1.appendHtmlElement(host, projectIndexHtmlPath, `<style type="text/css">${loaderStyles}</style>`, 'head');
-        utils_1.appendHtmlElement(host, projectIndexHtmlPath, loaderHtml, 'app-root');
+        utils_1.appendHtmlElement(host, projectIndexHtmlPath, loaderHtml, 'body');
         return host;
     };
 }

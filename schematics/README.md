@@ -1,8 +1,8 @@
 # Ng-Matero
 
-This Ng-Matero is an Angular admin templete made with Material componnets. 
+Ng-Matero is an Angular admin templete made with Material componnets. 
 
-You can use the Anglar Cli Schematics to install the project.
+You can use the Anglar CLI Schematics to install the project.
 
 ## Installation
 
@@ -39,6 +39,16 @@ Generate a entry component in the page component.
 ```bash
 $ ng g ng-matero:page <page-name>/<entry-component-name> -m=<module-name> -e=true
 ```
+
+### Example
+
+Just two steps after initializing the project, you can get a route page.
+
+```bash
+$ ng g ng-matero:module abc
+$ ng g ng-matero:page def -m=abc
+```
+Take a look at `http://localhost:4200/#/abc/def`, enjoy it!
 
 ## License
 
