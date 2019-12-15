@@ -13,7 +13,6 @@ const global_loader_1 = require("./global-loader");
 const package_config_1 = require("./package-config");
 const packages_1 = require("./packages");
 const utils_1 = require("../utils");
-const { red, bold, italic } = chalk_1.default;
 /** Name of the Angular module that enables Angular browser animations. */
 const browserAnimationsModuleName = 'BrowserAnimationsModule';
 /** Name of the module that switches Angular animations to a noop implementation. */
@@ -22,7 +21,7 @@ const noopAnimationsModuleName = 'NoopAnimationsModule';
  * Scaffolds the basics of a Angular Material application, this includes:
  *  - Add Starter files to root
  *  - Add Scripts to package.json
- *  - Add Hmr & style to angular.json
+ *  - Add Hmr & style & proxy to angular.json
  *  - Add Hammer.js
  *  - Add Browser Animation to app.module
  *  - Add Fonts & Icons to index.html
@@ -36,6 +35,7 @@ function default_1(options) {
         addScriptsToPackageJson(),
         addHmrToAngularJson(),
         addStyleToAngularJson(),
+        addProxyToAngularJson(),
         options && options.gestures ? hammerjs_import_1.addHammerJsToMain(options) : schematics_1.noop(),
         addAnimationsModule(options),
         material_fonts_1.addFontsToIndex(options),
@@ -60,9 +60,9 @@ function addAnimationsModule(options) {
             // animations. If we would add the BrowserAnimationsModule while the NoopAnimationsModule
             // is already configured, we would cause unexpected behavior and runtime exceptions.
             if (schematics_2.hasNgModuleImport(host, appModulePath, noopAnimationsModuleName)) {
-                return console.warn(red(`Could not set up "${bold(browserAnimationsModuleName)}" ` +
-                    `because "${bold(noopAnimationsModuleName)}" is already imported. Please manually ` +
-                    `set up browser animations.`));
+                return console.warn(chalk_1.default.red(`Could not set up "${chalk_1.default.bold(browserAnimationsModuleName)}" ` +
+                    `because "${chalk_1.default.bold(noopAnimationsModuleName)}" is already imported. Please ` +
+                    `manually set up browser animations.`));
             }
             schematics_2.addModuleImportToRootModule(host, browserAnimationsModuleName, '@angular/platform-browser/animations', project);
         }
@@ -80,6 +80,7 @@ function deleteExsitingFiles() {
         const workspace = config_1.getWorkspace(host);
         const project = schematics_2.getProjectFromWorkspace(workspace);
         [
+            `${project.root}/tsconfig.app.json`,
             `${project.root}/tsconfig.json`,
             `${project.root}/tslint.json`,
             `${project.sourceRoot}/app/app-routing.module.ts`,
@@ -90,6 +91,7 @@ function deleteExsitingFiles() {
             `${project.sourceRoot}/app/app.component.scss`,
             `${project.sourceRoot}/environments/environment.prod.ts`,
             `${project.sourceRoot}/environments/environment.ts`,
+            `${project.sourceRoot}/main.ts`,
             `${project.sourceRoot}/styles.scss`,
         ]
             .filter(p => host.exists(p))
@@ -102,7 +104,7 @@ function addScriptsToPackageJson() {
         package_config_1.addScriptToPackageJson(host, 'build:prod', 'ng build --prod --build-optimizer');
         package_config_1.addScriptToPackageJson(host, 'lint:ts', `tslint -p src/tsconfig.app.json -c tslint.json 'src/**/*.ts'`);
         package_config_1.addScriptToPackageJson(host, 'lint:scss', `stylelint --syntax scss 'src/**/*.scss' --fix'`);
-        package_config_1.addScriptToPackageJson(host, 'hmr', `ng serve -c=hmr --disable-host-check`);
+        package_config_1.addScriptToPackageJson(host, 'hmr', `ng serve --hmr -c hmr --disable-host-check`);
     };
 }
 /** Add hmr to angular.json */
@@ -122,8 +124,8 @@ function addHmrToAngularJson() {
         };
         // serve
         project.architect.serve.configurations.hmr = {
-            browserTarget: `${workspace.defaultProject}:build:hmr`,
             hmr: true,
+            browserTarget: `${workspace.defaultProject}:build:hmr`,
         };
         host.overwrite('angular.json', JSON.stringify(ngJson, null, 2));
     };
@@ -137,6 +139,16 @@ function addStyleToAngularJson() {
         const themePath = `src/styles.scss`;
         utils_1.addThemeStyleToTarget(project, 'build', host, themePath, workspace);
         utils_1.addThemeStyleToTarget(project, 'test', host, themePath, workspace);
+    };
+}
+/** Add proxy to angular.json */
+function addProxyToAngularJson() {
+    return (host) => {
+        const workspace = config_1.getWorkspace(host);
+        const ngJson = Object.assign(workspace);
+        const project = ngJson.projects[ngJson.defaultProject];
+        project.architect.serve.options.proxyConfig = 'proxy.config.js';
+        host.overwrite('angular.json', JSON.stringify(ngJson, null, 2));
     };
 }
 /** Add starter files to root */

@@ -28,8 +28,6 @@ import { addScriptToPackageJson } from './package-config';
 import { add3rdPkgsToPackageJson } from './packages';
 import { addThemeStyleToTarget } from '../utils';
 
-const { red, bold, italic } = chalk;
-
 /** Name of the Angular module that enables Angular browser animations. */
 const browserAnimationsModuleName = 'BrowserAnimationsModule';
 
@@ -40,7 +38,7 @@ const noopAnimationsModuleName = 'NoopAnimationsModule';
  * Scaffolds the basics of a Angular Material application, this includes:
  *  - Add Starter files to root
  *  - Add Scripts to package.json
- *  - Add Hmr & style to angular.json
+ *  - Add Hmr & style & proxy to angular.json
  *  - Add Hammer.js
  *  - Add Browser Animation to app.module
  *  - Add Fonts & Icons to index.html
@@ -54,6 +52,7 @@ export default function(options: Schema): Rule {
     addScriptsToPackageJson(),
     addHmrToAngularJson(),
     addStyleToAngularJson(),
+    addProxyToAngularJson(),
     options && options.gestures ? addHammerJsToMain(options) : noop(),
     addAnimationsModule(options),
     addFontsToIndex(options),
@@ -80,10 +79,10 @@ function addAnimationsModule(options: Schema) {
       // is already configured, we would cause unexpected behavior and runtime exceptions.
       if (hasNgModuleImport(host, appModulePath, noopAnimationsModuleName)) {
         return console.warn(
-          red(
-            `Could not set up "${bold(browserAnimationsModuleName)}" ` +
-              `because "${bold(noopAnimationsModuleName)}" is already imported. Please manually ` +
-              `set up browser animations.`
+          chalk.red(
+            `Could not set up "${chalk.bold(browserAnimationsModuleName)}" ` +
+              `because "${chalk.bold(noopAnimationsModuleName)}" is already imported. Please ` +
+              `manually set up browser animations.`
           )
         );
       }
@@ -116,6 +115,7 @@ function deleteExsitingFiles() {
     const project = getProjectFromWorkspace(workspace);
 
     [
+      `${project.root}/tsconfig.app.json`,
       `${project.root}/tsconfig.json`,
       `${project.root}/tslint.json`,
       `${project.sourceRoot}/app/app-routing.module.ts`,
@@ -126,6 +126,7 @@ function deleteExsitingFiles() {
       `${project.sourceRoot}/app/app.component.scss`,
       `${project.sourceRoot}/environments/environment.prod.ts`,
       `${project.sourceRoot}/environments/environment.ts`,
+      `${project.sourceRoot}/main.ts`,
       `${project.sourceRoot}/styles.scss`,
     ]
       .filter(p => host.exists(p))
@@ -143,7 +144,7 @@ function addScriptsToPackageJson() {
       `tslint -p src/tsconfig.app.json -c tslint.json 'src/**/*.ts'`
     );
     addScriptToPackageJson(host, 'lint:scss', `stylelint --syntax scss 'src/**/*.scss' --fix'`);
-    addScriptToPackageJson(host, 'hmr', `ng serve -c=hmr --disable-host-check`);
+    addScriptToPackageJson(host, 'hmr', `ng serve --hmr -c hmr --disable-host-check`);
   };
 }
 
@@ -165,8 +166,8 @@ function addHmrToAngularJson() {
     };
     // serve
     project.architect.serve.configurations.hmr = {
-      browserTarget: `${workspace.defaultProject}:build:hmr`,
       hmr: true,
+      browserTarget: `${workspace.defaultProject}:build:hmr`,
     };
 
     host.overwrite('angular.json', JSON.stringify(ngJson, null, 2));
@@ -179,9 +180,24 @@ function addStyleToAngularJson() {
     const workspace = getWorkspace(host);
     const ngJson = Object.assign(workspace);
     const project = ngJson.projects[ngJson.defaultProject];
+
     const themePath = `src/styles.scss`;
+
     addThemeStyleToTarget(project, 'build', host, themePath, workspace);
     addThemeStyleToTarget(project, 'test', host, themePath, workspace);
+  };
+}
+
+/** Add proxy to angular.json */
+function addProxyToAngularJson() {
+  return (host: Tree) => {
+    const workspace = getWorkspace(host);
+    const ngJson = Object.assign(workspace);
+    const project = ngJson.projects[ngJson.defaultProject];
+
+    project.architect.serve.options.proxyConfig = 'proxy.config.js';
+
+    host.overwrite('angular.json', JSON.stringify(ngJson, null, 2));
   };
 }
 

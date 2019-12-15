@@ -10,11 +10,10 @@ import { NgProgressRouterModule } from '@ngx-progressbar/router';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { FormlyModule } from '@ngx-formly/core';
 import { FormlyMaterialModule } from '@ngx-formly/material';
+import { MaterialExtensionsModule } from '@ng-matero/extensions';
 
 import { BreadcrumbComponent } from './components/breadcrumb/breadcrumb.component';
 import { PageHeaderComponent } from './components/page-header/page-header.component';
-import { MiniProgressComponent } from './components/mini-progress/mini-progress.component';
-import { Text3dComponent } from './components/text3d/text3d.component';
 import { ErrorCodeComponent } from './components/error-code/error-code.component';
 
 const THIRD_MODULES = [
@@ -25,14 +24,10 @@ const THIRD_MODULES = [
   NgSelectModule,
   FormlyModule,
   FormlyMaterialModule,
+  MaterialExtensionsModule,
 ];
-const COMPONENTS = [
-  BreadcrumbComponent,
-  PageHeaderComponent,
-  MiniProgressComponent,
-  Text3dComponent,
-  ErrorCodeComponent,
-];
+const COMPONENTS = [BreadcrumbComponent, PageHeaderComponent, ErrorCodeComponent];
+const COMPONENTS_DYNAMIC = [];
 const DIRECTIVES = [];
 const PIPES = [];
 
@@ -49,5 +44,6 @@ const PIPES = [];
     ...DIRECTIVES,
     ...PIPES,
   ],
+  entryComponents: COMPONENTS_DYNAMIC,
 })
 export class SharedModule {}
