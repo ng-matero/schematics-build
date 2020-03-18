@@ -16,6 +16,16 @@ function findRouteNode(node, kind, textKey, textValue) {
     return foundNode;
 }
 exports.findRouteNode = findRouteNode;
+function findRouteNodeByKey(node, kind, textKey) {
+    let foundNode = null;
+    ts.forEachChild(node, (childNode) => {
+        if (childNode.initializer.kind === kind && childNode.name.text === textKey) {
+            foundNode = childNode.initializer;
+        }
+    });
+    return foundNode;
+}
+exports.findRouteNodeByKey = findRouteNodeByKey;
 /**
  * Adds a new route declaration to a router module (i.e. has a RouterModule declaration)
  */
@@ -61,12 +71,12 @@ function addRouteDeclarationToModule(source, fileToAdd, routeLiteral) {
         route = `,${identation[0] || ' '}${routeLiteral}`;
     }
     // Find a route which `path` equals to `''`
-    const routeNode = findRouteNode(routesArr, ts.SyntaxKind.Identifier, 'path', '');
-    if (!routeNode) {
+    const routeNodeInsertedTo = findRouteNode(routesArr, ts.SyntaxKind.Identifier, 'path', '');
+    if (!routeNodeInsertedTo) {
         throw new Error(`Couldn't find a route definition which path is empty string`);
     }
-    const routeNodeArr = ast_utils_1.findNodes(routeNode, ts.SyntaxKind.ArrayLiteralExpression, 1)[0];
-    return ast_utils_1.insertAfterLastOccurrence(routeNodeArr.elements, route, fileToAdd, routeNodeArr.elements.pos, ts.SyntaxKind.ObjectLiteralExpression);
+    const routeNodeChildren = findRouteNodeByKey(routeNodeInsertedTo, ts.SyntaxKind.ArrayLiteralExpression, 'children');
+    return ast_utils_1.insertAfterLastOccurrence(routeNodeChildren.elements, route, fileToAdd, routeNodeChildren.elements.pos, ts.SyntaxKind.ObjectLiteralExpression);
 }
 exports.addRouteDeclarationToModule = addRouteDeclarationToModule;
 //# sourceMappingURL=ast-utils.js.map

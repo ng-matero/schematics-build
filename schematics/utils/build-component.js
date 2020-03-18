@@ -232,7 +232,7 @@ function buildComponent(options, additionalFiles = {}) {
             options.style = 'css';
         }
         // Object that will be used as context for the EJS templates.
-        const baseTemplateContext = Object.assign({}, core_1.strings, { 'if-flat': (s) => (options.flat ? '' : s) }, options);
+        const baseTemplateContext = Object.assign(Object.assign(Object.assign({}, core_1.strings), { 'if-flat': (s) => (options.flat ? '' : s) }), options);
         // Key-value object that includes the specified additional files with their loaded content.
         // The resolved contents can be used inside EJS templates.
         const resolvedFiles = {};

@@ -6,8 +6,7 @@ const schematics_2 = require("@angular/cdk/schematics");
 const tasks_1 = require("@angular-devkit/schematics/tasks");
 const config_1 = require("@schematics/angular/utility/config");
 const ng_ast_utils_1 = require("@schematics/angular/utility/ng-ast-utils");
-const chalk_1 = require("chalk");
-const hammerjs_import_1 = require("./hammerjs-import");
+const chalk = require("chalk");
 const material_fonts_1 = require("./material-fonts");
 const global_loader_1 = require("./global-loader");
 const package_config_1 = require("./package-config");
@@ -22,7 +21,6 @@ const noopAnimationsModuleName = 'NoopAnimationsModule';
  *  - Add Starter files to root
  *  - Add Scripts to package.json
  *  - Add Hmr & style & proxy to angular.json
- *  - Add Hammer.js
  *  - Add Browser Animation to app.module
  *  - Add Fonts & Icons to index.html
  *  - Add Preloader to index.html
@@ -36,11 +34,10 @@ function default_1(options) {
         addHmrToAngularJson(),
         addStyleToAngularJson(),
         addProxyToAngularJson(),
-        options && options.gestures ? hammerjs_import_1.addHammerJsToMain(options) : schematics_1.noop(),
         addAnimationsModule(options),
         material_fonts_1.addFontsToIndex(options),
         global_loader_1.addLoaderToIndex(options),
-        installPackages(options),
+        installPackages(),
     ]);
 }
 exports.default = default_1;
@@ -60,8 +57,8 @@ function addAnimationsModule(options) {
             // animations. If we would add the BrowserAnimationsModule while the NoopAnimationsModule
             // is already configured, we would cause unexpected behavior and runtime exceptions.
             if (schematics_2.hasNgModuleImport(host, appModulePath, noopAnimationsModuleName)) {
-                return console.warn(chalk_1.default.red(`Could not set up "${chalk_1.default.bold(browserAnimationsModuleName)}" ` +
-                    `because "${chalk_1.default.bold(noopAnimationsModuleName)}" is already imported. Please ` +
+                return console.warn(chalk.red(`Could not set up "${chalk.bold(browserAnimationsModuleName)}" ` +
+                    `because "${chalk.bold(noopAnimationsModuleName)}" is already imported. Please ` +
                     `manually set up browser animations.`));
             }
             schematics_2.addModuleImportToRootModule(host, browserAnimationsModuleName, '@angular/platform-browser/animations', project);
@@ -101,7 +98,8 @@ function deleteExsitingFiles() {
 /** Add scripts to package.json */
 function addScriptsToPackageJson() {
     return (host) => {
-        package_config_1.addScriptToPackageJson(host, 'build:prod', 'ng build --prod --build-optimizer');
+        package_config_1.addScriptToPackageJson(host, 'postinstall', 'ngcc --properties es2015 browser module main --first-only --create-ivy-entry-points');
+        package_config_1.addScriptToPackageJson(host, 'build:prod', 'ng build --prod');
         package_config_1.addScriptToPackageJson(host, 'lint:ts', `tslint -p src/tsconfig.app.json -c tslint.json 'src/**/*.ts'`);
         package_config_1.addScriptToPackageJson(host, 'lint:scss', `stylelint --syntax scss 'src/**/*.scss' --fix'`);
         package_config_1.addScriptToPackageJson(host, 'hmr', `ng serve --hmr -c hmr --disable-host-check`);
@@ -155,15 +153,15 @@ function addProxyToAngularJson() {
 function addStarterFiles(options) {
     return schematics_1.chain([
         schematics_1.mergeWith(schematics_1.apply(schematics_1.url('./files'), [
-            schematics_1.template(Object.assign({}, core_1.strings, options)),
+            schematics_1.template(Object.assign(Object.assign({}, core_1.strings), options)),
         ])),
     ]);
 }
 /** Install packages */
-function installPackages(options) {
+function installPackages() {
     return (host, context) => {
         // Add 3rd packages
-        packages_1.add3rdPkgsToPackageJson(host, options);
+        packages_1.add3rdPkgsToPackageJson(host);
         context.addTask(new tasks_1.NodePackageInstallTask());
         return host;
     };

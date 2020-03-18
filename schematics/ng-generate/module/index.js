@@ -1,9 +1,10 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -109,7 +110,7 @@ function default_1(options) {
             // options.routing || (isLazyLoadedModuleGen && !!routingModulePath)
             //   ? noop()
             //   : filter(path => !path.endsWith('-routing.module.ts.template')),
-            schematics_1.applyTemplates(Object.assign({}, core_1.strings, { 'if-flat': (s) => (options.flat ? '' : s) }, options)),
+            schematics_1.applyTemplates(Object.assign(Object.assign(Object.assign({}, core_1.strings), { 'if-flat': (s) => (options.flat ? '' : s) }), options)),
             schematics_1.move(parsedPath.path),
         ]);
         return schematics_1.chain([

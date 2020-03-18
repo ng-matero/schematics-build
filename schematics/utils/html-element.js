@@ -13,12 +13,12 @@ function appendHtmlElement(host, htmlFilePath, elementHtml, tag) {
     if (htmlContent.includes(elementHtml)) {
         return;
     }
-    const ElemTag = getHtmlTagElement(htmlContent, tag);
-    if (!ElemTag) {
+    const elemTag = getHtmlTagElement(htmlContent, tag);
+    if (!elemTag) {
         throw new Error(`Could not find '<${tag}>' element in HTML file: ${htmlFileBuffer}`);
     }
-    const endTagOffset = ElemTag.sourceCodeLocation.endTag.startOffset;
-    const indentationOffset = schematics_2.getChildElementIndentation(ElemTag);
+    const endTagOffset = elemTag.sourceCodeLocation.endTag.startOffset;
+    const indentationOffset = schematics_2.getChildElementIndentation(elemTag);
     const insertion = `${' '.repeat(indentationOffset)}${elementHtml}`;
     const recordedChange = host.beginUpdate(htmlFilePath).insertRight(endTagOffset, `${insertion}\n`);
     host.commitUpdate(recordedChange);

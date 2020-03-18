@@ -1,7 +1,6 @@
-import { strings, normalize, experimental } from '@angular-devkit/core';
+import { strings, normalize } from '@angular-devkit/core';
 import {
   chain,
-  noop,
   Rule,
   Tree,
   mergeWith,
@@ -19,9 +18,8 @@ import {
 import { NodePackageInstallTask } from '@angular-devkit/schematics/tasks';
 import { getWorkspace } from '@schematics/angular/utility/config';
 import { getAppModulePath } from '@schematics/angular/utility/ng-ast-utils';
-import chalk from 'chalk';
+import * as chalk from 'chalk';
 import { Schema } from './schema';
-import { addHammerJsToMain } from './hammerjs-import';
 import { addFontsToIndex } from './material-fonts';
 import { addLoaderToIndex } from './global-loader';
 import { addScriptToPackageJson } from './package-config';
@@ -39,7 +37,6 @@ const noopAnimationsModuleName = 'NoopAnimationsModule';
  *  - Add Starter files to root
  *  - Add Scripts to package.json
  *  - Add Hmr & style & proxy to angular.json
- *  - Add Hammer.js
  *  - Add Browser Animation to app.module
  *  - Add Fonts & Icons to index.html
  *  - Add Preloader to index.html
@@ -53,11 +50,10 @@ export default function(options: Schema): Rule {
     addHmrToAngularJson(),
     addStyleToAngularJson(),
     addProxyToAngularJson(),
-    options && options.gestures ? addHammerJsToMain(options) : noop(),
     addAnimationsModule(options),
     addFontsToIndex(options),
     addLoaderToIndex(options),
-    installPackages(options),
+    installPackages(),
   ]);
 }
 
@@ -137,7 +133,12 @@ function deleteExsitingFiles() {
 /** Add scripts to package.json */
 function addScriptsToPackageJson() {
   return (host: Tree) => {
-    addScriptToPackageJson(host, 'build:prod', 'ng build --prod --build-optimizer');
+    addScriptToPackageJson(
+      host,
+      'postinstall',
+      'ngcc --properties es2015 browser module main --first-only --create-ivy-entry-points'
+    );
+    addScriptToPackageJson(host, 'build:prod', 'ng build --prod');
     addScriptToPackageJson(
       host,
       'lint:ts',
@@ -216,10 +217,10 @@ function addStarterFiles(options: Schema) {
 }
 
 /** Install packages */
-function installPackages(options: Schema) {
+function installPackages() {
   return (host: Tree, context: SchematicContext) => {
     // Add 3rd packages
-    add3rdPkgsToPackageJson(host, options);
+    add3rdPkgsToPackageJson(host);
 
     context.addTask(new NodePackageInstallTask());
     return host;

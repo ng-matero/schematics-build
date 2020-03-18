@@ -17,11 +17,11 @@ function addFontsToIndex(options) {
         const project = schematics_1.getProjectFromWorkspace(workspace, options.project);
         const projectIndexHtmlPath = project_index_html_1.getIndexHtmlPath(project);
         const fonts = [
-            'https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap',
             'assets/fonts/Material_Icons.css',
+            'https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap',
         ];
-        fonts.forEach(f => {
-            schematics_1.appendHtmlElementToHead(host, projectIndexHtmlPath, `<link href="${f}" rel="stylesheet">`);
+        fonts.forEach(font => {
+            schematics_1.appendHtmlElementToHead(host, projectIndexHtmlPath, `<link rel="stylesheet" href="${font}">`);
         });
         return host;
     };

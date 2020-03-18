@@ -20,12 +20,12 @@ export function addFontsToIndex(options: Schema): (host: Tree) => Tree {
     const projectIndexHtmlPath = getIndexHtmlPath(project);
 
     const fonts = [
-      'https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap',
       'assets/fonts/Material_Icons.css',
+      'https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap',
     ];
 
-    fonts.forEach(f => {
-      appendHtmlElementToHead(host, projectIndexHtmlPath, `<link href="${f}" rel="stylesheet">`);
+    fonts.forEach(font => {
+      appendHtmlElementToHead(host, projectIndexHtmlPath, `<link rel="stylesheet" href="${font}">`);
     });
 
     return host;

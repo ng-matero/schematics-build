@@ -12,8 +12,14 @@ export class TopmenuComponent implements OnInit {
 
   ngOnInit() {}
 
-  // Delete empty value in array
-  filterStates(states: string[]) {
-    return states.filter(item => item && item.trim());
+  // Delete empty values and rebuild route
+  buildRoute(states: string[]) {
+    let route = '';
+    states.forEach(item => {
+      if (item && item.trim()) {
+        route += '/' + item.replace(/^\/+|\/+$/g, '');
+      }
+    });
+    return route;
   }
 }

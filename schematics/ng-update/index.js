@@ -7,19 +7,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-const chalk_1 = require("chalk");
+const chalk = require("chalk");
 /** Entry point for the migration schematics with target of Ng-Matero v0 */
 function updateToV0() {
-    console.log(chalk_1.default.green('The \`ng update\` is working!'));
+    console.log(chalk.green('The \`ng update\` is working!'));
 }
 exports.updateToV0 = updateToV0;
 /** Function that will be called when the migration completed. */
 function onMigrationComplete(targetVersion, hasFailures) {
     console.log();
-    console.log(chalk_1.default.green(`  ✓  Updated Ng-Matero to ${targetVersion}`));
+    console.log(chalk.green(`  ✓  Updated Ng-Matero to ${targetVersion}`));
     console.log();
     if (hasFailures) {
-        console.log(chalk_1.default.yellow('  ⚠  Some issues were detected but could not be fixed automatically. Please check the ' +
+        console.log(chalk.yellow('  ⚠  Some issues were detected but could not be fixed automatically. Please check the ' +
             'output above and fix these issues manually.'));
     }
 }
